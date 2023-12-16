@@ -49,9 +49,9 @@ const userModel = (sequelize, DataTypes) => {
     user.password = hashedPass;
   });
 
-  model.authenticateBasic = async function (username, password) {
+  model.authenticateBasic = async function (email, password) {
     try {
-      const user = await this.findOne({ where: { username } });
+      const user = await this.findOne({ where: { email } });
       const valid = await bcrypt.compare(password, user.password);
       if (valid) {
         return user;

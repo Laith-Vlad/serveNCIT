@@ -47,6 +47,9 @@ const userModel = (sequelize, DataTypes) => {
   model.beforeCreate(async (user) => {
     let hashedPass = await bcrypt.hash(user.password, 10);
     user.password = hashedPass;
+    if(user.role=="admin"){
+      user.status == "active"
+    }
   });
 
   model.authenticateBasic = async function (email, password) {

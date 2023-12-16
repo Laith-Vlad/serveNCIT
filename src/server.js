@@ -27,6 +27,7 @@ app.use(logger);
 // Routers
 app.get('/',handleHome)
 app.use(authRouter)
+app.use(router)
 
 
 //Error handlers 

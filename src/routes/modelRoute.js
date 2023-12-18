@@ -12,10 +12,10 @@ router.param('model', modelParam);
 
 router.get('/:model', handleGetAll);
 router.get('/:model/:id', handleGetOne);
-router.post('/:model', bearerAuth, capabilities('create'), handleCreate);
-router.put('/:model/:id', bearerAuth, capabilities('update'), handleUpdate);
-router.put('/users/:id/status', bearerAuth, capabilities('updateStatus'), handleUpdateStatus);
-router.delete('/:model/:id', bearerAuth, capabilities('delete'), handleDelete);
+router.post('/:model',  handleCreate);
+router.put('/:model/:id',  handleUpdate);
+router.put('/users/:id/status', handleUpdateStatus);
+router.delete('/:model/:id',  handleDelete);
 
 async function handleGetAll(req, res) {
   let allRecords = await req.model.get();

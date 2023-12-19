@@ -41,7 +41,7 @@ async function handleCreateRelation(req, res) {
     const { userId, subjectId } = req.body;
 
     // Check if the combination of subject ID and user ID already exists
-    const existingRecord = await dataModules.AssignedSubject.findOne({
+    const existingRecord = await dataModules.assignedSubjects.findOne({
       where: {
         userId: userId,
         subjectId: subjectId,

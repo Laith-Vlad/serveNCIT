@@ -19,6 +19,7 @@ router.delete('/:model/:id',  handleDelete);
 router.get('/assignedSubjects/user/:userId', handleGetAssignedSubjectsByUser);
 router.get('/assignedSubjects/subject/:subjectId', handleGetAssignedSubjectsBySubject);
 router.post('/users/:userId/assignedSubjects/:subjectId', handleCreateRelation);
+router.put('/users/:userId/assignedSubjects/:subjectId', handleUpdateRelation);
 
 async function handleGetAll(req, res) {
   let allRecords = await req.model.get();
@@ -38,23 +39,48 @@ async function handleCreate(req, res) {
 }
 async function handleCreateRelation(req, res) {
   try {
-    const { userId, subjectId } = req.body;
+    const { userId, subjectId,subjectName } = req.body;
 
     // Check if the combination of subject ID and user ID already exists
-    const existingRecord = await dataModules.assignedSubjects.findOne({
-      where: {
-        userId: userId,
-        subjectId: subjectId,
-      },
-    });
+    const existingRecord = await dataModules.assignedSubjects.model.findOne({ where: {  userId: userId,
+      subjectId: subjectId,subjectName:subjectName, } }
+       
+      
+    );
 
     if (existingRecord) {
       return res.status(400).json({ message: 'Record already exists' });
     }
 
     // If the combination doesn't exist, proceed with creating a new record
-    let newRecord = await req.model.create({ userId, subjectId });
+    let newRecord = await dataModules.assignedSubjects.model.create({ userId, subjectId,subjectName });
     res.status(201).json(newRecord);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
+async function handleUpdateRelation(req, res) {
+  try {
+    const { obtainedMark,subjectId,userId, subjectName} = req.body;
+
+    // Check if the combination of subject ID and user ID already exists
+    const assignedSubjects = await dataModules.assignedSubjects.model.findAll({
+      where: {
+        subjectName:subjectName,
+        userId: userId,
+        subjectId:subjectId
+      },
+    });
+   console.log(assignedSubjects[0].dataValues.id)
+    const id = assignedSubjects[0].dataValues.id
+    const data = {obtainedMark:obtainedMark}
+    // If the combination doesn't exist, proceed with creating a new record
+    let newRecord = await dataModules.assignedSubjects.model.update(
+      { obtainedMark: obtainedMark },
+      { where: { id: id } }
+    );
+    res.status(200).json(newRecord);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -102,7 +128,7 @@ async function handleGetAssignedSubjectsByUser(req, res) {
   const userId = req.params.userId;
 
   try {
-    const assignedSubjects = await dataModules.AssignedSubject.findAll({
+    const assignedSubjects = await dataModules.assignedSubjects.model.findAll({
       where: {
         userId: userId,
       },
@@ -119,7 +145,7 @@ async function handleGetAssignedSubjectsBySubject(req, res) {
   const subjectId = req.params.subjectId;
 
   try {
-    const assignedSubjects = await dataModules.AssignedSubject.findAll({
+    const assignedSubjects = await dataModules.assignedSubjects.findAll({
       where: {
         subjectId: subjectId,
       },
